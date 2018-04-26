@@ -9,9 +9,12 @@ return [
     'postEdit' => 'GET/edit/post',
     'postStore' => 'POST/store/post',
     'postUpdate' => 'POST/update/post',
+    'confirmDelete' => 'GET/confirmDelete/post',
     'postDestroy' => 'POST/destroy/post',
-    'postConfirmDelete' => 'GET/confirmDelete/post',
-    'postLogin' => 'POST/login/post',
+    'authLoginForm' => 'GET/getLoginForm/auth',
+    'authLogin' => 'POST/login/auth',
+    'logOut' => 'GET/logOut/auth',
+    'endOfTheWorld' => 'POST/nuke/post'
 
 
 ];

@@ -1,4 +1,5 @@
 <?php
+include 'controller.php';
 // https://laravel.com/docs/5.6/controllers#resource-controllers
 
 // la liste des posts
@@ -17,26 +18,25 @@ function index()
 
 
 // affiche le formulaire de creation pour un ressource
-
 function create()
 {
+    authCheck();
     return [
         'view' => 'postCreate.php'
     ];
 }
 
 
-// enrigstre la ressource dans la base de donnée
-// apres il y aura une redirection
+//enrigstre la ressource dans la base de donnée
+//apres il y aura une redirection
 
-/**
- *
- */
 function store()
 {
-    if (!isset($_POST['title']) || !isset($_POST['content'])) {
-        header('Location: index.php?a=create&r=post');
-        die();
+    authCheck();
+    if (!isset($_POST['title']) || !isset ($_POST['content'])) {
+        header('Location: index.php?a=index&r=post');
+        exit;
+
     }
     include 'models/post.php';
 
@@ -44,8 +44,13 @@ function store()
     $content = $_POST['content'];
 
     $id = storePost($title, $content);
-    header('Location: index.php?a=index&r=post');
-    die();
+
+    if(isset($_SESSION['email']) && isset($_SESSION['password'])){
+        header('location:index.php?a=show&r=post&id='.$id);
+
+    }else{
+        header('Location: index.php?a=index&r=post');
+    }
 
 }
 
@@ -74,6 +79,7 @@ function show()
 
 function edit()
 {
+    authCheck();
     if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) return false;
     $id = $_GET['id'];
     include 'models/post.php';
@@ -93,29 +99,36 @@ function edit()
 
 function update()
 {
-    if (!isset($_POST['id']) || !ctype_digit($_GET['id']) || !isset($_POST['title']) || !isset($_POST['body'])) {
+    authCheck();
+
+    if (!isset($_POST['id']) ||
+        !ctype_digit($_POST['id']) ||
+        !isset($_POST['title']) ||
+        !isset ($_POST['content'])) {
+
         header('Location: index.php?a=index&r=post');
-        die();
+        exit;
+
     }
+
     $id = $_POST['id'];
     $title = $_POST['title'];
     $content = $_POST['content'];
     include 'models/post.php';
-    updatePost($id, $title, $body);
+    updatePost($id, $title, $content);
 
     header('Location: index.php?a=show&r=post&id=' . $id);
 
-
 }
 
+function confirmDelete(){
+    authCheck();
 
-// supprime un element de la base de donnée
-function confirmDelete()
-{
-    if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) return false;
+    if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
+        return false;
+    }
     $id = $_GET['id'];
     include 'models/post.php';
-
     $post = getOnePost($id);
 
     return [
@@ -124,20 +137,31 @@ function confirmDelete()
             'post' => $post
         ]
     ];
+
 }
 
+
+// supprime un element de la base de donnée
 
 function destroy()
 {
+    authCheck();
     if (!isset($_POST['id']) || !ctype_digit($_POST['id'])) {
         return false;
-    };
+    }
     $id = $_POST['id'];
     include 'models/post.php';
+    deletePost($id);
     header('Location: index.php?a=index&r=post');
 }
 
-
+function nuke(){
+    authCheck();
+    include 'models/post.php';
+    nukePosts();
+    echo 'The end of the FUCKING world !';
+    exit;
+}
 
 
 

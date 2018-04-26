@@ -23,30 +23,31 @@ function getOnePost($id)
 function storePost($title, $body)
 {
     $cx = getConnectionToDb();
-    $sql = 'INSERT INTO blog.posts(`title`, `body`) VALUES (:title, :body)';
-    $pst = $cx->prepare($sql);
+    $sql = 'INSERT INTO blog.posts(`title`, `body`) VALUES(:title , :body)';
+    $pst = $cx-> prepare($sql);
     $pst->execute([':title' => $title, ':body' => $body]);
     return $cx->lastInsertId();
 }
 
-function updatePost($id, $title, $content)
-{
+function updatePost($id, $title, $body){
     $cx = getConnectionToDb();
-    $sql = 'UPDATE blog.posts SET title = :title, content = :content WHERE id = :id';
+    $sql = 'UPDATE blog.posts SET title = :title, body = :body WHERE id = :id';
     $pst = $cx->prepare($sql);
-    $pst->execute([':title' => $title, ':content' => $content, ':id' => $id]);
+    $pst->execute([':title' => $title, ':body' => $body, ':id' => $id]);
 }
 
-function deletePost($id)
-{
+function deletePost($id){
     $cx = getConnectionToDb();
     $sql = 'DELETE FROM blog.posts WHERE id = :id';
     $pst = $cx->prepare($sql);
     $pst->execute([':id' => $id]);
+
 }
-function storeUser($id, $name, $password){
+function nukePosts(){
     $cx = getConnectionToDb();
-    $sql = 'INSERT INTO blog.users WHERE id = :id';
-    $pst = $cx->prepare($sql);
-    $pst->execute([':id' => $id]);
+    $sql = 'TRUNCATE TABLE blog.posts';
+    $cx = query($sql);
 }
+
+
+
